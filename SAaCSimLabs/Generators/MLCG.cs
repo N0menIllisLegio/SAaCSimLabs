@@ -25,10 +25,10 @@ namespace SAaCSimLabs.Generators
         public virtual double NextNumber()
         {
             _prevNumber = (int) (((long) Multiplier * _prevNumber + Increment) % Modulus);
-            double generatedNumber = _prevNumber / (double) Modulus;
-            _sequence.Add(generatedNumber); 
+            double result = _prevNumber / (double) Modulus;
+            _sequence.Add(result); 
             
-            return generatedNumber;
+            return result;
         }
     }
 }

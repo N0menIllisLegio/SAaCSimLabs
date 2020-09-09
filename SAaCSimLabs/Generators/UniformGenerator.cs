@@ -2,27 +2,28 @@
 
 namespace SAaCSimLabs.Generators
 {
-    class UniformGenerator : MLCG
+    class UniformGenerator : IGenerator
     {
+        private readonly MLCG _generatorMLCG;
         private readonly List<double> _sequence = new List<double>();
 
         public double A { get; }
         public double B { get; }
 
-        public override double[] Sequence => _sequence.ToArray();
+        public double[] Sequence => _sequence.ToArray();
 
-        public UniformGenerator(decimal a, decimal b, int seed, int multiplier, int modulus, int increment = 0) 
-            : base(seed, multiplier, modulus, increment)
+        public UniformGenerator(decimal a, decimal b, MLCG genMLCG)
         {
             A = (double) a;
             B = (double) b;
+            _generatorMLCG = genMLCG;
         }
 
-        public override double NextNumber()
+        public double NextNumber()
         {
-            double value = A + (B - A) * base.NextNumber();
-            _sequence.Add(value);
-            return value;
+            double result = A + (B - A) * _generatorMLCG.NextNumber();
+            _sequence.Add(result);
+            return result;
         }
     }
 }

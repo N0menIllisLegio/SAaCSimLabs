@@ -391,7 +391,7 @@
             this.NumbersList.ItemHeight = 15;
             this.NumbersList.Location = new System.Drawing.Point(225, 20);
             this.NumbersList.Name = "NumbersList";
-            this.NumbersList.Size = new System.Drawing.Size(185, 379);
+            this.NumbersList.Size = new System.Drawing.Size(185, 469);
             this.NumbersList.TabIndex = 4;
             // 
             // OutputBox
@@ -401,7 +401,7 @@
             this.OutputBox.Location = new System.Drawing.Point(13, 411);
             this.OutputBox.Name = "OutputBox";
             this.OutputBox.ReadOnly = true;
-            this.OutputBox.Size = new System.Drawing.Size(397, 81);
+            this.OutputBox.Size = new System.Drawing.Size(206, 81);
             this.OutputBox.TabIndex = 5;
             this.OutputBox.Text = "";
             // 

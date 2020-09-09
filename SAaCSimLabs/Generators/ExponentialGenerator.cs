@@ -3,24 +3,25 @@ using System.Collections.Generic;
 
 namespace SAaCSimLabs.Generators
 {
-    class ExponentialGenerator : MLCG
+    class ExponentialGenerator : IGenerator
     {
         private readonly List<double> _sequence = new List<double>();
+        private readonly MLCG _generatorMLCG;
 
         public double Lambda { get; }
-        public override double[] Sequence => _sequence.ToArray();
+        public double[] Sequence => _sequence.ToArray();
 
-        public ExponentialGenerator(decimal lambda, int seed, int multiplier, int modulus, int increment = 0) 
-            : base(seed, multiplier, modulus, increment)
+        public ExponentialGenerator(decimal lambda, MLCG genMLCG)
         {
             Lambda = (double) lambda;
+            _generatorMLCG = genMLCG;
         }
 
-        public override double NextNumber()
+        public double NextNumber()
         {
-            double value = -1 / Lambda * Math.Log(base.NextNumber());
-            _sequence.Add(value);
-            return value;
+            double result = -1 / Lambda * Math.Log(_generatorMLCG.NextNumber());
+            _sequence.Add(result);
+            return result;
         }
     }
 }

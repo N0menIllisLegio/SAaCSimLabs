@@ -1,18 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SAaCSimLabs.Generators
 {
-    class SimpsonGenerator : MLCG
+    class SimpsonGenerator : IGenerator
     {
-        public SimpsonGenerator(int seed, int multiplier, int modulus, int increment = 0) : base(seed, multiplier, modulus, increment)
+        private readonly List<double> _sequence = new List<double>();
+        private readonly Random _rnd = new Random();
+        private readonly double[] _intervalRandoms;
+
+        public double A { get; }
+        public double B { get; }
+
+        public double[] Sequence => _sequence.ToArray();
+
+        public SimpsonGenerator(decimal a, decimal b, int count, MLCG genMLCG)
         {
+            A = (double) a;
+            B = (double) b;
+            _intervalRandoms = new double[count];
+
+            for (int i = 0; i < count; i++)
+            {
+                _intervalRandoms[i] = (A / 2) + (B / 2 - A / 2) * genMLCG.NextNumber();
+            }
         }
 
-        public override double NextNumber()
+        public double NextNumber()
         {
-            return base.NextNumber();
+            double result = _intervalRandoms[_rnd.Next(_intervalRandoms.Length)] +
+                            _intervalRandoms[_rnd.Next(_intervalRandoms.Length)];
+            _sequence.Add(result);
+
+            return result;
         }
     }
 }

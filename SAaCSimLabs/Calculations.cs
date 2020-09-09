@@ -17,22 +17,22 @@ namespace SAaCSimLabs
         public int Period { get; private set; }
         public int AperiodicitySegment { get; private set; }
 
+        public Calculations(MLCG generator)
+        {
+            _sequence = generator.Sequence;
+            CalculateStatistics();
+            _plotMin = 0;
+            _plotMax = 1;
+
+            CalculatePeriodAndAperiodicitySegment(generator.Multiplier, generator.Modulus, generator.Increment);
+        }
+
         public Calculations(IGenerator generator)
         {
             _sequence = generator.Sequence;
             CalculateStatistics();
-            CalculatePeriodAndAperiodicitySegment(generator.Multiplier, generator.Modulus, generator.Increment);
-
-            if (generator.GetType().Name == "MLCG")
-            {
-                _plotMin = 0;
-                _plotMax = 1;
-            }
-            else
-            {
-                _plotMin = _sequence.Min();
-                _plotMax = _sequence.Max();
-            }
+            _plotMin = _sequence.Min();
+            _plotMax = _sequence.Max();
         }
 
         private void CalculateStatistics()

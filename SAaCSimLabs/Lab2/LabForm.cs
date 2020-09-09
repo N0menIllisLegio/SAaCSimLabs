@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using SAaCSimLabs.Generators;
 
@@ -16,7 +17,7 @@ namespace SAaCSimLabs.Lab2
             UniformDistributionInit();
         }
 
-        private void GenerateButton_Click(object sender, EventArgs e)
+        private async void GenerateButton_Click(object sender, EventArgs e)
         {
             string distribution = DistributionComboBox.SelectedItem.ToString();
 
@@ -27,6 +28,7 @@ namespace SAaCSimLabs.Lab2
             bool showAllNumbers = !DisplayedNumbersLimiter.Checked;
 
             IGenerator generator;
+            MLCG generatorMLCG = new MLCG(seed, multiplier, range);
 
             ClearComponents();
             GeneratingProgress.Maximum = count;
@@ -34,52 +36,60 @@ namespace SAaCSimLabs.Lab2
             switch (distribution)
             {
                 case "Uniform":
-                    generator = new UniformGenerator(Input1.Value, Input2.Value, seed, multiplier, range);
+                    generator = new UniformGenerator(Input1.Value, Input2.Value, generatorMLCG);
                     break;
                 case "Gauss":
-                    generator = new GaussGenerator(Input1.Value, Input2.Value, Input3.Value, count, seed, multiplier, range);
+                    generator = new GaussGenerator(Input1.Value, Input2.Value, Input3.Value, count, generatorMLCG);
                     break;
                 case "Exponential":
-                    generator = new ExponentialGenerator(Input1.Value, count, seed, multiplier, range);
+                    generator = new ExponentialGenerator(Input1.Value, generatorMLCG);
                     break;
                 case "Gamma":
+                    generator = new GammaGenerator(Input1.Value, Input2.Value, count, generatorMLCG);
+                    break;
                 case "Triangular":
+                    generator = new TriangularGenerator(Input1.Value, Input2.Value, TriangularMinCheckBox.Checked, count, generatorMLCG);
+                    break;
                 case "Simpson":
+                    generator = new SimpsonGenerator(Input1.Value, Input2.Value, count, generatorMLCG);
+                    break;
                 default:
-                    generator = new MLCG(seed, multiplier, range);
+                    generator = generatorMLCG;
                     break;
             }
 
-            ProgressStage("Generating numbers...");
-
-            for (int i = 0; i < count; i++)
+            await Task.Factory.StartNew(() =>
             {
-                if (showAllNumbers || i < 100)
+                ProgressStage("Generating numbers...");
+
+                for (int i = 0; i < count; i++)
                 {
-                    string row = $"{i + 1}. {generator.NextNumber()}";
-                    NumbersList.Items.Add(row);
+                    if (showAllNumbers || i < 100)
+                    {
+                        string row = $"{i + 1}. {generator.NextNumber()}";
+                        ExecuteInUIThread(() => NumbersList.Items.Add(row));
+                    }
+                    else
+                    {
+                        generator.NextNumber();
+                    }
+
+                    ExecuteInUIThread(() => GeneratingProgress.Value++);
                 }
-                else
-                {
-                    generator.NextNumber();
-                }
 
-                ExecuteInUIThread(() => GeneratingProgress.Value++);
-            }
+                ProgressStage("Calculating statistics...");
 
-            ProgressStage("Calculating statistics...");
+                Calculations calculations = new Calculations(generator);
+                AddToOutputBox($"M = {calculations.ExpectedValue:F5}");
+                AddToOutputBox($"D = {calculations.Variance:F5}");
+                AddToOutputBox($"σ = {calculations.StandardDeviation:F5}");
 
-            Calculations calculations = new Calculations(generator);
-            AddToOutputBox($"M = {calculations.ExpectedValue:F5}");
-            AddToOutputBox($"D = {calculations.Variance:F5}");
-            AddToOutputBox($"σ = {calculations.StandardDeviation:F5}");
+                ProgressStage("Building plot...");
+                calculations.BuildHistogram(Plot.plt);
+                Plot.Render();
 
-            ProgressStage("Building plot...");
-            calculations.BuildHistogram(Plot.plt);
-            Plot.Render();
-
-            ProgressStage("Complete.");
-
+                ProgressStage("Complete.");
+            });
         }
 
         private void DistributionComboBox_SelectedValueChanged(object sender, EventArgs e)
@@ -189,7 +199,7 @@ namespace SAaCSimLabs.Lab2
         private void GammaDistributionInit()
         {
             SetInputLabels("η:", "λ:");
-            InitNumericInput(Input1, true, 1, 0.01m, 500, 2, 17);
+            InitNumericInput(Input1, true, 1, 1, 500, 0, 17);
             InitNumericInput(Input2, true, 1, 0.01m, 500, 2, 0.51m);
         }
 
