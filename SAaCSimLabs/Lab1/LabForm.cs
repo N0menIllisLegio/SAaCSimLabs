@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SAaCSimLabs.Generators;
 
 namespace SAaCSimLabs.Lab1
 {
@@ -30,7 +31,7 @@ namespace SAaCSimLabs.Lab1
 
             await Task.Factory.StartNew(() =>
             {
-                ExecuteInUIThread(() => StatusLabel.Text = "Generating numbers...");
+                ProgressStage("Generating numbers...");
                 for (int i = 0; i < count; i++)
                 {
                     if (showAllNumbers || i < 100)
@@ -49,9 +50,9 @@ namespace SAaCSimLabs.Lab1
             {
                 ProgressStage("Calculating statistics...");
                 Calculations calculations = new Calculations(generator);
-                ExecuteInUIThread(() => outputBox.Text += $"M = {calculations.ExpectedValue:F5}\n");
-                ExecuteInUIThread(() => outputBox.Text += $"D = {calculations.Variance:F5}\n");
-                ExecuteInUIThread(() => outputBox.Text += $"σ = {calculations.StandardDeviation:F5}\n");
+                AddToOutputBox($"M = {calculations.ExpectedValue:F5}");
+                AddToOutputBox($"D = {calculations.Variance:F5}");
+                AddToOutputBox($"σ = {calculations.StandardDeviation:F5}");
 
                 ProgressStage("Building plot...");
                 calculations.BuildHistogram(Plot.plt);
@@ -59,22 +60,22 @@ namespace SAaCSimLabs.Lab1
 
                 ProgressStage("Calculating distribution evenness...");
                 calculations.EstimateDistributionEvenness();
-                ExecuteInUIThread(() => outputBox.Text += $"2K/N = {calculations.EstimateDistributionEvenness():F5} -> {Math.PI / 4:F5}\n");
+                AddToOutputBox($"2K/N = {calculations.EstimateDistributionEvenness():F5} -> {Math.PI / 4:F5}");
 
                 ProgressStage("Calculating period...");
                 int period = calculations.Period;
                 int aperiodicitySegment = calculations.AperiodicitySegment;
 
-                string periodOutput = period != 0 ? 
-                    $"P = {period}\n" : "Not enough numbers to calculate period.\n";
-                string aperiodicitySegmentOutput = aperiodicitySegment != 0 ? 
-                    $"L = {aperiodicitySegment}" : "Not enough numbers to calculate aperiodicity segment.";
-
-                ExecuteInUIThread(() => outputBox.Text += periodOutput);
-                ExecuteInUIThread(() => outputBox.Text += aperiodicitySegmentOutput);
+                AddToOutputBox(period != 0 ? $"P = {period}" : "Not enough numbers to calculate period.");
+                AddToOutputBox(aperiodicitySegment != 0 ? $"L = {aperiodicitySegment}" : "Not enough numbers to calculate aperiodicity segment.");
 
                 ProgressStage("Complete.");
             });
+        }
+
+        private void AddToOutputBox(string message)
+        {
+            ExecuteInUIThread(() => outputBox.Text += message + "\n");
         }
 
         private void ProgressStage(string stageName)

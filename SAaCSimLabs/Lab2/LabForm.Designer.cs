@@ -53,8 +53,8 @@
             this.Input2 = new System.Windows.Forms.NumericUpDown();
             this.Input1 = new System.Windows.Forms.NumericUpDown();
             this.StatusStrip = new System.Windows.Forms.StatusStrip();
-            this.ProgressBar = new System.Windows.Forms.ToolStripProgressBar();
-            this.StatusMessage = new System.Windows.Forms.ToolStripStatusLabel();
+            this.GeneratingProgress = new System.Windows.Forms.ToolStripProgressBar();
+            this.StatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.NumbersList = new System.Windows.Forms.ListBox();
             this.OutputBox = new System.Windows.Forms.RichTextBox();
             this.groupBox1.SuspendLayout();
@@ -219,7 +219,7 @@
             this.RangeInput.TabIndex = 13;
             this.RangeInput.ThousandsSeparator = true;
             this.RangeInput.Value = new decimal(new int[] {
-            2,
+            700001,
             0,
             0,
             0});
@@ -242,7 +242,7 @@
             this.MultiplierInput.TabIndex = 12;
             this.MultiplierInput.ThousandsSeparator = true;
             this.MultiplierInput.Value = new decimal(new int[] {
-            1,
+            30001,
             0,
             0,
             0});
@@ -265,7 +265,7 @@
             this.CountInput.TabIndex = 11;
             this.CountInput.ThousandsSeparator = true;
             this.CountInput.Value = new decimal(new int[] {
-            2,
+            10000,
             0,
             0,
             0});
@@ -367,23 +367,23 @@
             // StatusStrip
             // 
             this.StatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ProgressBar,
-            this.StatusMessage});
+            this.GeneratingProgress,
+            this.StatusLabel});
             this.StatusStrip.Location = new System.Drawing.Point(0, 504);
             this.StatusStrip.Name = "StatusStrip";
             this.StatusStrip.Size = new System.Drawing.Size(1034, 22);
             this.StatusStrip.TabIndex = 3;
             this.StatusStrip.Text = "statusStrip1";
             // 
-            // ProgressBar
+            // GeneratingProgress
             // 
-            this.ProgressBar.Name = "ProgressBar";
-            this.ProgressBar.Size = new System.Drawing.Size(200, 16);
+            this.GeneratingProgress.Name = "GeneratingProgress";
+            this.GeneratingProgress.Size = new System.Drawing.Size(200, 16);
             // 
-            // StatusMessage
+            // StatusLabel
             // 
-            this.StatusMessage.Name = "StatusMessage";
-            this.StatusMessage.Size = new System.Drawing.Size(0, 17);
+            this.StatusLabel.Name = "StatusLabel";
+            this.StatusLabel.Size = new System.Drawing.Size(0, 17);
             // 
             // NumbersList
             // 
@@ -439,8 +439,8 @@
         private System.Windows.Forms.ComboBox DistributionComboBox;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.StatusStrip StatusStrip;
-        private System.Windows.Forms.ToolStripProgressBar ProgressBar;
-        private System.Windows.Forms.ToolStripStatusLabel StatusMessage;
+        private System.Windows.Forms.ToolStripProgressBar GeneratingProgress;
+        private System.Windows.Forms.ToolStripStatusLabel StatusLabel;
         private System.Windows.Forms.ListBox NumbersList;
         private System.Windows.Forms.RichTextBox OutputBox;
         private System.Windows.Forms.CheckBox TriangularMinCheckBox;

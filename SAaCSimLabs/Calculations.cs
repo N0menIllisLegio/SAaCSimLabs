@@ -1,12 +1,15 @@
-﻿using ScottPlot;
+﻿using SAaCSimLabs.Generators;
+using ScottPlot;
 using System;
 using System.Linq;
 
-namespace SAaCSimLabs.Lab1
+namespace SAaCSimLabs
 {
     class Calculations
     {
         private readonly double[] _sequence;
+        private readonly double _plotMin;
+        private readonly double _plotMax;
 
         public double ExpectedValue { get; private set; }
         public double Variance { get; private set; }
@@ -14,11 +17,22 @@ namespace SAaCSimLabs.Lab1
         public int Period { get; private set; }
         public int AperiodicitySegment { get; private set; }
 
-        public Calculations(MLCG generator)
+        public Calculations(IGenerator generator)
         {
             _sequence = generator.Sequence;
             CalculateStatistics();
-            CalculatePeriodAndAperiodicitySegment(generator.A, generator.M, generator.C);
+            CalculatePeriodAndAperiodicitySegment(generator.Multiplier, generator.Modulus, generator.Increment);
+
+            if (generator.GetType().Name == "MLCG")
+            {
+                _plotMin = 0;
+                _plotMax = 1;
+            }
+            else
+            {
+                _plotMin = _sequence.Min();
+                _plotMax = _sequence.Max();
+            }
         }
 
         private void CalculateStatistics()
@@ -31,8 +45,8 @@ namespace SAaCSimLabs.Lab1
         public void BuildHistogram(Plot plt)
         {
             const int barsCount = 20;
-            double low = 0;
-            double delta = (1 - low) / barsCount;
+            double low = _plotMin;
+            double delta = (_plotMax - low) / barsCount;
             double high = low + delta;
 
             double[] numbersInIntervals = new double[barsCount];
@@ -54,7 +68,7 @@ namespace SAaCSimLabs.Lab1
 
             plt.Ticks(xTickRotation: 45);
             plt.Grid(enableVertical: false, lineStyle: LineStyle.Dot);
-            plt.XLabel(" ", fontSize: 25);
+            plt.XLabel(" ", fontSize: 40);
         }
 
         public double EstimateDistributionEvenness()
