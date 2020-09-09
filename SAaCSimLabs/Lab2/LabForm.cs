@@ -40,6 +40,8 @@ namespace SAaCSimLabs.Lab2
                     generator = new GaussGenerator(Input1.Value, Input2.Value, Input3.Value, count, seed, multiplier, range);
                     break;
                 case "Exponential":
+                    generator = new ExponentialGenerator(Input1.Value, count, seed, multiplier, range);
+                    break;
                 case "Gamma":
                 case "Triangular":
                 case "Simpson":
@@ -61,6 +63,8 @@ namespace SAaCSimLabs.Lab2
                 {
                     generator.NextNumber();
                 }
+
+                ExecuteInUIThread(() => GeneratingProgress.Value++);
             }
 
             ProgressStage("Calculating statistics...");
