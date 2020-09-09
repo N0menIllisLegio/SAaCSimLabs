@@ -5,7 +5,7 @@ namespace SAaCSimLabs.Generators
 {
     class ExponentialGenerator : MLCG
     {
-        private readonly List<double> _sequence;
+        private readonly List<double> _sequence = new List<double>();
 
         public double Lambda { get; }
         public override double[] Sequence => _sequence.ToArray();
@@ -14,7 +14,6 @@ namespace SAaCSimLabs.Generators
             : base(seed, multiplier, modulus, increment)
         {
             Lambda = (double) lambda;
-            _sequence = new List<double>();
         }
 
         public override double NextNumber()

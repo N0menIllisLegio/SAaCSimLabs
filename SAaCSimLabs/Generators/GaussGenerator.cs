@@ -5,8 +5,8 @@ namespace SAaCSimLabs.Generators
 {
     class GaussGenerator : MLCG
     {
-        private readonly Random _rnd;
-        private readonly List<double> _sequence;
+        private readonly Random _rnd = new Random();
+        private readonly List<double> _sequence = new List<double>();
 
         public int N { get; }
         public double StandardDeviation { get; }
@@ -20,8 +20,6 @@ namespace SAaCSimLabs.Generators
             N = (int) n;
             StandardDeviation = (double) standardDeviation;
             ExpectedValue = (double) expectedValue;
-            _rnd = new Random();
-            _sequence = new List<double>();
 
             for (int i = 0; i < count; i++)
             {

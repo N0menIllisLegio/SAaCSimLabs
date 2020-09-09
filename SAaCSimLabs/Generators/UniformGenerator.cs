@@ -4,7 +4,7 @@ namespace SAaCSimLabs.Generators
 {
     class UniformGenerator : MLCG
     {
-        private readonly List<double> _sequence;
+        private readonly List<double> _sequence = new List<double>();
 
         public double A { get; }
         public double B { get; }
@@ -16,8 +16,6 @@ namespace SAaCSimLabs.Generators
         {
             A = (double) a;
             B = (double) b;
-
-            _sequence = new List<double>();
         }
 
         public override double NextNumber()

@@ -5,7 +5,7 @@ namespace SAaCSimLabs.Generators
     class MLCG : IGenerator
     {
         private int _prevNumber;
-        private readonly List<double> _sequence;
+        private readonly List<double> _sequence = new List<double>();
 
         public double Seed { get; }
         public int Multiplier { get; }
@@ -20,8 +20,6 @@ namespace SAaCSimLabs.Generators
             Modulus = modulus;
             Increment = increment;
             Seed = seed;
-
-            _sequence = new List<double>();
         }
 
         public virtual double NextNumber()
@@ -32,7 +30,5 @@ namespace SAaCSimLabs.Generators
             
             return generatedNumber;
         }
-
-
     }
 }
