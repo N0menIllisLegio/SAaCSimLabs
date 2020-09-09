@@ -387,6 +387,8 @@
             // 
             // NumbersList
             // 
+            this.NumbersList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.NumbersList.FormattingEnabled = true;
             this.NumbersList.ItemHeight = 15;
             this.NumbersList.Location = new System.Drawing.Point(225, 20);
