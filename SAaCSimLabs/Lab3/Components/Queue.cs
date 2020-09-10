@@ -8,6 +8,7 @@ namespace SAaCSimLabs.Lab3.Components
     {
         private readonly int _queueSize;
         private Request _processingRequest;
+        public int MaxProbabilityState { get; set; }
         public IComponent[] NextComponents { get; set; }
         public int PositionInStruct { get; set; }
         public System.Collections.Generic.Queue<Request> RequestsQueue { get; set; }
@@ -60,7 +61,10 @@ namespace SAaCSimLabs.Lab3.Components
             RequestsQueue = new Queue<Request>();
             // One last element stored in ProcessingRequest
             _queueSize = queueSize - 1;
+            
+            MaxProbabilityState = queueSize;
         }
+
         public void Process()
         {
             if (RequestsQueue.Count > 0)

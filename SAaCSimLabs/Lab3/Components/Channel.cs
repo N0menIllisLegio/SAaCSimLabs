@@ -4,9 +4,10 @@ namespace SAaCSimLabs.Lab3.Components
 {
     class Channel : IComponent
     {
-        protected readonly Random _rnd;
+        protected readonly Random _rnd = new Random();
         protected double _π;
 
+        public int MaxProbabilityState { get; set; }
         public IComponent[] NextComponents { get; set; }
         public int PositionInStruct { get; set; }
         public Request ProcessingRequest { get; set; }
@@ -15,9 +16,9 @@ namespace SAaCSimLabs.Lab3.Components
         {
             PositionInStruct = positionInStruct;
             _π = π;
-
             ProcessingRequest = null;
-            _rnd = new Random();
+            // 0 - Free channel, 1 - Processing request
+            MaxProbabilityState = 2;
         }
 
         public virtual void Process()

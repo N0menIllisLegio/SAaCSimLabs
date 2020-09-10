@@ -13,7 +13,7 @@ namespace SAaCSimLabs.Lab3
         public int Tact { get; private set; }
         public IComponent[] Components { get; private set; }
 
-
+        public int[][] ProbabilityStates { get; private set; }
 
         public MassServiceSystem(int executionTime)
         {
@@ -23,8 +23,9 @@ namespace SAaCSimLabs.Lab3
 
         public void SetComponents(params IComponent[] components)
         {
-            LinkComponents(components);
             Components = components.OrderByDescending(component => component.PositionInStruct).ToArray();
+            LinkComponents(components);
+            CalculateProbabilities(components);
         }
 
         public void Execute()
@@ -49,6 +50,11 @@ namespace SAaCSimLabs.Lab3
                 component.NextComponents =
                     components.Where(cmp => cmp.PositionInStruct == component.PositionInStruct + 1).ToArray();
             }
+        }
+
+        private void CalculateProbabilities(IComponent[] components)
+        {
+
         }
     }
 }

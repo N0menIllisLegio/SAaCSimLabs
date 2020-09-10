@@ -4,23 +4,19 @@ namespace SAaCSimLabs.Lab3.Components
 {
     class SourceWithBlockingDiscipline : Source
     {
-        /// <summary>
-        /// Constructor for sources with fixed time.
-        /// </summary>
-        /// <param name="positionInStruct">Position in structure (in struct with parallel elements, this elements will have same Position)</param>
-        /// <param name="fixedTime">Fixed time of request to appear</param>
-        public SourceWithBlockingDiscipline(MassServiceSystem mSS, int positionInStruct, int fixedTime) 
+        public SourceWithBlockingDiscipline(MassServiceSystem mSS, int positionInStruct, int fixedTime)
             : base(mSS, positionInStruct, fixedTime)
-        { }
+        {
+            // 0 - Blocked, 1...fixedTime - Time for request to appear
+            MaxProbabilityState = fixedTime;
+        }
 
-        /// <summary>
-        /// Constructor for channels and sources with probability of filtering and appearing
-        /// </summary>
-        /// <param name="positionInStruct">Position in structure (in struct with parallel elements, this elements will have same Position)</param>
-        /// <param name="ρ">Value ρ for source or π for channel</param>
         public SourceWithBlockingDiscipline(MassServiceSystem mSS, int positionInStruct, double ρ)
             : base(mSS, positionInStruct, ρ)
-        { }
+        {
+            // 0 - blocked, 1 - generating
+            MaxProbabilityState = 1;
+        }
 
         public override void Process()
         {

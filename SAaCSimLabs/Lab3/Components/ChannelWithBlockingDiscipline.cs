@@ -5,7 +5,10 @@ namespace SAaCSimLabs.Lab3.Components
     class ChannelWithBlockingDiscipline : Channel
     {
         public ChannelWithBlockingDiscipline(int positionInStruct, double π) : base(positionInStruct, π)
-        { }
+        {
+            // 0 - no requests, 1 - one request, 2 - blocked
+            MaxProbabilityState = 2;
+        }
 
         public override void Process()
         {
