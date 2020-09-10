@@ -56,7 +56,6 @@
             // 
             // Lab3Button
             // 
-            this.Lab3Button.Enabled = false;
             this.Lab3Button.Location = new System.Drawing.Point(12, 105);
             this.Lab3Button.Name = "Lab3Button";
             this.Lab3Button.Size = new System.Drawing.Size(170, 40);

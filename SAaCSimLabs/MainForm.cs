@@ -24,7 +24,8 @@ namespace SAaCSimLabs
 
         private void Lab3Button_Click(object sender, EventArgs e)
         {
-
+            Lab3.LabForm lab3Form = new Lab3.LabForm();
+            lab3Form.ShowDialog(this);
         }
 
         private void Lab4Button_Click(object sender, EventArgs e)
