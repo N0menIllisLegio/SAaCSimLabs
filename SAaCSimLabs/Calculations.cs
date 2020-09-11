@@ -103,16 +103,18 @@ namespace SAaCSimLabs
             }
 
             // Aperiodicity Segment
-            MLCG lcpRng = new MLCG((int) Math.Round(_sequence[Period - 1] * m), a, m, c);
+            //MLCG lcpRng = new MLCG((int) Math.Round(_sequence[Period - 1] * m), a, m, c);
 
-            for (int i = 0; i < _sequence.Length; i++)
-            {
-                if (IsEquals(_sequence[i], lcpRng.NextNumber()))
-                {
-                    AperiodicitySegment = i + Period;
-                    return;
-                }
-            }
+            //for (int i = 0; i < _sequence.Length; i++)
+            //{
+            //    if (IsEquals(_sequence[i], lcpRng.NextNumber()))
+            //    {
+            //        AperiodicitySegment = i + Period;
+            //        return;
+            //    }
+            //}
+
+            AperiodicitySegment = _sequence.Length % Period + Period;
         }
 
         private bool IsEquals(double value1, double value2)

@@ -178,44 +178,44 @@ namespace SAaCSimLabs.Lab2
         private void UniformDistributionInit()
         {
             SetInputLabels("a:", "b:");
-            InitNumericInput(Input1, true, 1, 0, 1000, 2, 7);
-            InitNumericInput(Input2, true, 1, 0, 1000, 2, 11);
+            InitNumericInput(Input1, true, 1, -1000, 1000, 2, 7);
+            InitNumericInput(Input2, true, 1, -1000, 1000, 2, 11);
         }
 
         private void GaussDistributionInit()
         {
             SetInputLabels("n:", "mₓ:", "σₓ:");
             InitNumericInput(Input1, true, 1, 6, 12, value: 6);
-            InitNumericInput(Input2, true, 1, 0, 1000, 2, 400);
-            InitNumericInput(Input3, true, 1, 0, 1000, 2, 20);
+            InitNumericInput(Input2, true, 1, -10000, 10000, 2, 400);
+            InitNumericInput(Input3, true, 1, -10000, 10000, 2, 20);
         }
 
         private void ExponentialDistributionInit()
         {
             SetInputLabels("λ:");
-            InitNumericInput(Input1, true, 1, 0.01m, 1000, 2, 1);
+            InitNumericInput(Input1, true, 1, -10000.01m, 10000, 2, 1);
         }
 
         private void GammaDistributionInit()
         {
             SetInputLabels("η:", "λ:");
-            InitNumericInput(Input1, true, 1, 1, 500, 0, 17);
-            InitNumericInput(Input2, true, 1, 0.01m, 500, 2, 0.51m);
+            InitNumericInput(Input1, true, 1, -10000, 50000, 0, 17);
+            InitNumericInput(Input2, true, 1, -10000.01m, 50000, 2, 0.51m);
         }
 
         private void TriangularDistributionInit()
         {
             TriangularMinCheckBox.Enabled = true;
             SetInputLabels("a:", "b:");
-            InitNumericInput(Input1, true, 1, 0, 1000, 2, 3);
-            InitNumericInput(Input2, true, 1, 0, 1000, 2, 11);
+            InitNumericInput(Input1, true, 1, -10000, 10000, 2, 3);
+            InitNumericInput(Input2, true, 1, -10000, 10000, 2, 11);
         }
 
         private void SimpsonDistributionInit()
         {
             SetInputLabels("a:", "b:");
-            InitNumericInput(Input1, true, 1, 0, 1000, 2, 9);
-            InitNumericInput(Input2, true, 1, 0, 1000, 2, 2);
+            InitNumericInput(Input1, true, 1, -10000, 10000, 2, 9);
+            InitNumericInput(Input2, true, 1, -10000, 10000, 2, 2);
         }
 
         private void DisableAllInputs()
