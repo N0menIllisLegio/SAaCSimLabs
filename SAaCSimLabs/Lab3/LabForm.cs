@@ -25,6 +25,20 @@ namespace SAaCSimLabs.Lab3
             system.SetComponents(source, pi1, queue, pi2);
             system.Execute();
 
+            foreach (var stateInfo in system.ProbabilityStatesInfos)
+            {
+                string output = "";
+
+                for (int i = stateInfo.State.Length - 1; i >= 0; i--)
+                {
+                    output += $"{stateInfo.State[i]}";
+                }
+
+                output += $" - {stateInfo.Times / (double)system.Tact:F4}";
+
+                AddToOutputBox(output);
+            }
+
             AddToOutputBox($"Completed: {system.Requests.Count(x => x.State == RequestState.Completed)}");
             AddToOutputBox($"Discarded: {system.Requests.Count(x => x.State == RequestState.Discarded)}");
             AddToOutputBox($"Processing: {system.Requests.Count(x => x.State == RequestState.Processing)}");
@@ -33,11 +47,11 @@ namespace SAaCSimLabs.Lab3
             AddToOutputBox("\n");
 
             AddToOutputBox(
-                $"A: {system.Requests.Count(x => x.State == RequestState.Completed) / (double) system.Tact:0.000}");
+                $"A: {system.Requests.Count(x => x.State == RequestState.Completed) / (double)system.Tact:0.000}");
             AddToOutputBox(
-                $"Pотк: {system.Requests.Count(x => x.State == RequestState.Discarded) / (double) system.Requests.Count:0.000}");
+                $"Pотк: {system.Requests.Count(x => x.State == RequestState.Discarded) / (double)system.Requests.Count:0.000}");
             AddToOutputBox(
-                $"Wstat: {system.Requests.Sum(x => x.ExistingTime) / (double) system.Requests.Count(x => x.State != RequestState.Discarded):0.000}");
+                $"Wstat: {system.Requests.Sum(x => x.ExistingTime) / (double)system.Requests.Count(x => x.State != RequestState.Discarded):0.000}");
 
         }
 

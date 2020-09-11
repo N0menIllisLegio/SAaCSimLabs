@@ -10,6 +10,7 @@ namespace SAaCSimLabs.Lab3.Components
         protected int tactWorked;
         protected readonly MassServiceSystem _massServiceSystem;
 
+        public virtual int CurrentState { get; }
         public int MaxProbabilityState { get; set; }
         public IComponent[] NextComponents { get; set; }
         public int PositionInStruct { get; set; }

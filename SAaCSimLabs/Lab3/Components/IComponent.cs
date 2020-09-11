@@ -2,6 +2,7 @@
 {
     interface IComponent
     {
+        public int CurrentState { get; }
         public int MaxProbabilityState { get; set; }
         public IComponent[] NextComponents { get; set; }
         public int PositionInStruct { get; set; }

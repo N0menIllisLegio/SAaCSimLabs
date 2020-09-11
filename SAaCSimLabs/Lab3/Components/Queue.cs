@@ -8,6 +8,17 @@ namespace SAaCSimLabs.Lab3.Components
     {
         private readonly int _queueSize;
         private Request _processingRequest;
+
+        public int CurrentState
+        {
+            get
+            {
+                int count = ProcessingRequest != null ? 1 : 0;
+                count += RequestsQueue.Count;
+                return count;
+            }
+        }
+
         public int MaxProbabilityState { get; set; }
         public IComponent[] NextComponents { get; set; }
         public int PositionInStruct { get; set; }

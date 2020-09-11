@@ -39,7 +39,6 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.OutputBox.Location = new System.Drawing.Point(13, 42);
             this.OutputBox.Name = "OutputBox";
-            this.OutputBox.ReadOnly = true;
             this.OutputBox.Size = new System.Drawing.Size(775, 396);
             this.OutputBox.TabIndex = 0;
             this.OutputBox.Text = "";

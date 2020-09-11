@@ -4,6 +4,20 @@ namespace SAaCSimLabs.Lab3.Components
 {
     class SourceWithDiscardingDiscipline : Source
     {
+        public override int CurrentState 
+        { 
+            get
+            {
+                if (_fixedTime == null)
+                {
+                    return 0;
+                }
+
+                // -1 ?
+                return tactWorked % (_fixedTime.Value - 1);
+            } 
+        }
+
         public SourceWithDiscardingDiscipline(MassServiceSystem mSS, int positionInStruct, double ρ)
             : base(mSS, positionInStruct, ρ)
         {
@@ -14,7 +28,7 @@ namespace SAaCSimLabs.Lab3.Components
         public SourceWithDiscardingDiscipline(MassServiceSystem mSS, int positionInStruct, int fixedTime)
             : base(mSS, positionInStruct, fixedTime)
         {
-            // 0 - is blocking, and here you cant block request will discard
+            // 0 - here you cant block request will discard | -1 ? 
             MaxProbabilityState = fixedTime - 1;
         }
 

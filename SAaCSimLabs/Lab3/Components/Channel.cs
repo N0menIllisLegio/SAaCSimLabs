@@ -8,6 +8,8 @@ namespace SAaCSimLabs.Lab3.Components
         protected double _π;
 
         public int MaxProbabilityState { get; set; }
+        public virtual int CurrentState => ProcessingRequest != null ? 1 : 0;
+
         public IComponent[] NextComponents { get; set; }
         public int PositionInStruct { get; set; }
         public Request ProcessingRequest { get; set; }
@@ -18,7 +20,7 @@ namespace SAaCSimLabs.Lab3.Components
             _π = π;
             ProcessingRequest = null;
             // 0 - Free channel, 1 - Processing request
-            MaxProbabilityState = 2;
+            MaxProbabilityState = 1;
         }
 
         public virtual void Process()

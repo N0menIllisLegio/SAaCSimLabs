@@ -4,6 +4,24 @@ namespace SAaCSimLabs.Lab3.Components
 {
     class SourceWithBlockingDiscipline : Source
     {
+        public override int CurrentState 
+        {
+            get
+            {
+                if (ProcessingRequest != null)
+                {
+                    return 0;
+                }
+
+                if (_fixedTime != null)
+                {
+                    return tactWorked % _fixedTime.Value;
+                }
+
+                return 1;
+            }
+        }
+
         public SourceWithBlockingDiscipline(MassServiceSystem mSS, int positionInStruct, int fixedTime)
             : base(mSS, positionInStruct, fixedTime)
         {
