@@ -15,11 +15,11 @@
         public int TimeInQueue;
         public int CreationTact;
 
-        public void TactsPassed(int ticks = 1)
+        public void TactsPassed(int tacts = 1)
         {
             if (State == RequestState.Processing || State == RequestState.Pending)
             {
-                ExistingTime = ExistingTime + ticks;
+                ExistingTime = ExistingTime + tacts;
             }
         }
     }

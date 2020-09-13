@@ -24,8 +24,9 @@ namespace SAaCSimLabs.Lab3.Components
                 else
                 {
                     nextComponent.ProcessingRequest = ProcessingRequest;
-                    ProcessingRequest = null;
                 }
+
+                ProcessingRequest = null;
             }
         }
     }

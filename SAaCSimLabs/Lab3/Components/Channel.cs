@@ -34,13 +34,13 @@ namespace SAaCSimLabs.Lab3.Components
                     ProcessingRequest.State = RequestState.Completed;
                     ProcessingRequest = null;
                 }
-
-                TactsChannelProcessing++;
             }
         }
 
         protected bool RequestProcessed()
         {
+            TactsChannelProcessing++;
+
             return _rnd.NextDouble() > _π;
         }
     }

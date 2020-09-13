@@ -31,12 +31,22 @@ namespace SAaCSimLabs.Lab3
         public int ExecutionTime { get; set; }
 
         public int Tact { get; private set; }
-        public List<Request> Requests { get; private set; }
+        public List<Request> Requests { get; }
         public IComponent[] Components { get; private set; }
 
         #region StatisticsProps
 
-        public List<StateInfo> ProbabilityStatesInfos { get; private set; }
+        public List<StateInfo> ProbabilityStatesInfos { get; }
+
+        public double AbsoluteBandwidth { get; private set; }
+        public double DeclineProbability { get; private set; }
+        public double AvgTimeOfRequestInSystem { get; private set; }
+        public double AvgRequestsInSystem { get; private set; }
+        public double RelativeBandwidth { get; private set; }
+        public double AvgTimeOfRequestInQueue { get; private set; }
+        public List<double[]> CoefsOfChannelCapacity { get; }
+        public List<double[]> BlockingProbability { get; }
+        public List<double[]> AvgQueueLength { get; }
 
         #endregion
 
@@ -45,6 +55,9 @@ namespace SAaCSimLabs.Lab3
             Requests = new List<Request>();
             ExecutionTime = executionTime;
             ProbabilityStatesInfos = new List<StateInfo>();
+            CoefsOfChannelCapacity = new List<double[]>();
+            BlockingProbability = new List<double[]>();
+            AvgQueueLength = new List<double[]>();
         }
 
         public void SetComponents(params IComponent[] components)
@@ -88,26 +101,25 @@ namespace SAaCSimLabs.Lab3
         {
             //А – абсолютная пропускная способность(среднее число заявок, 
             //   обслуживаемых системой в единицу времени, т.е.интенсивность потока заявок на выходе системы);
-            var AbsoluteBandwidth = Requests.Count(x => x.State == RequestState.Completed) / (double)Tact;
+            AbsoluteBandwidth = Requests.Count(x => x.State == RequestState.Completed) / (double)Tact;
 
             //Ротк – вероятность отказа(вероятность того, что заявка, 
             //   сгенерированная источником, не будет в конечном итоге обслужена системой);
-            var DeclineProbability = Requests.Count(x => x.State == RequestState.Discarded) / (double)Requests.Count;
+            DeclineProbability = Requests.Count(x => x.State == RequestState.Discarded) / (double)Requests.Count;
 
             //Wс – среднее время пребывания заявки в системе;
-            var AvgTimeOfRequestInSystem = Requests.Sum(x => x.ExistingTime) / (double)Requests.Count(x => 
+            AvgTimeOfRequestInSystem = Requests.Sum(x => x.ExistingTime) / (double)Requests.Count(x => 
                 x.State != RequestState.Discarded);
 
             //Lc – среднее число заявок, находящихся в системе;
-            var AvgRequestsInSystem = _requestsInSystem / (double)Tact;
+            AvgRequestsInSystem = _requestsInSystem / (double)Tact;
 
             //Q – относительная пропускная способность(вероятность того, что 
             //   заявка, сгенерированная источником, будет в конечном итоге обслужена системой);
-            var RelativeBandwidth = Requests.Count(x => x.State == RequestState.Completed) / (double) Requests.Count;
+            RelativeBandwidth = Requests.Count(x => x.State == RequestState.Completed) / (double) Requests.Count;
 
             //Wоч – среднее время пребывания заявки в очереди;
-            var AvgTimeOfRequestInQueue = Requests.Sum(x => x.TimeInQueue) / (double)Requests.Count(x => x.TimeInQueue > 0);
-
+            AvgTimeOfRequestInQueue = Requests.Sum(x => x.TimeInQueue) / (double)Requests.Count(x => x.State != RequestState.Temp);
 
             List<double[]> tactsChannelProcessing = new List<double[]>();
             List<double[]> tactsComponentBlocking = new List<double[]>();
@@ -115,19 +127,17 @@ namespace SAaCSimLabs.Lab3
 
             foreach (IComponent component in Components)
             {
-                if (component.GetType() == typeof(Channel))
+                if (component is Channel channel1)
                 {
                     double[] channelInfo = new double[3];
-                    Channel channel = component as Channel;
 
-                    channelInfo[0] = component.PositionInStruct;
-                    channelInfo[1] = channel._π;
-                    channelInfo[2] = channel.TactsChannelProcessing;
+                    channelInfo[0] = channel1.PositionInStruct;
+                    channelInfo[1] = channel1._π;
+                    channelInfo[2] = channel1.TactsChannelProcessing;
 
                     tactsChannelProcessing.Add(channelInfo);
                 }
-
-                if (component.GetType() == typeof(ChannelWithBlockingDiscipline))
+                else if (component.GetType() == typeof(ChannelWithBlockingDiscipline))
                 {
                     double[] channelInfo = new double[3];
                     ChannelWithBlockingDiscipline channel = component as ChannelWithBlockingDiscipline;
@@ -137,8 +147,7 @@ namespace SAaCSimLabs.Lab3
 
                     tactsComponentBlocking.Add(channelInfo);
                 }
-
-                if (component.GetType() == typeof(SourceWithBlockingDiscipline))
+                else if (component.GetType() == typeof(SourceWithBlockingDiscipline))
                 {
                     double[] channelInfo = new double[3];
                     SourceWithBlockingDiscipline source = component as SourceWithBlockingDiscipline;
@@ -157,8 +166,7 @@ namespace SAaCSimLabs.Lab3
 
                     tactsComponentBlocking.Add(channelInfo);
                 }
-
-                if (component.GetType() == typeof(Queue))
+                else if (component.GetType() == typeof(Queue))
                 {
                     double[] queueInfo = new double[3];
                     Queue queue = component as Queue;
@@ -171,14 +179,17 @@ namespace SAaCSimLabs.Lab3
                 }
             }
 
+            CoefsOfChannelCapacity.Clear();
+            BlockingProbability.Clear();
+            AvgQueueLength.Clear();
+            
             //Kкан – коэффициент загрузки канала (вероятность занятости канала).
             // The problem is that I am not 100% sure that its exectly last channel
             // and there can be more than 1 channel => idk is this 1 combined result or separete for each channel
 
             // tacts processing / Tact
             // var CoefOfChannelCapacity = tactsChannelProcessing / (double)Tact;
-            List<double[]> CoefsOfChannelCapacity = new List<double[]>();
-
+            
             foreach (double[] channelInfo in tactsChannelProcessing)
             {
                 channelInfo[2] = channelInfo[2] / Tact;
@@ -187,30 +198,20 @@ namespace SAaCSimLabs.Lab3
 
             //Рбл – вероятность блокировки(вероятность застать источник или канал в состоянии блокировки);
             //
-            List<double[]> BlockingProbability = new List<double[]>();
-
-            foreach (double[] componentlInfo in tactsComponentBlocking)
+            
+            foreach (double[] componentInfo in tactsComponentBlocking)
             {
-                componentlInfo[2] = componentlInfo[2] / Tact;
-                CoefsOfChannelCapacity.Add(componentlInfo);
+                componentInfo[2] = componentInfo[2] / Tact;
+                BlockingProbability.Add(componentInfo);
             }
 
             //Lоч – средняя длина очереди;
             //Requests.Count(x => x.TimeInQueue > 0) / (double) Requests.Count; // ?
-            List<double[]> AvgQueueLength = new List<double[]>();
-
+            
             foreach (double[] queueInfo in sizesOfQueues)
             {
                 queueInfo[2] = queueInfo[2] / Tact;
                 AvgQueueLength.Add(queueInfo);
-            }
-
-            // L by formula:
-            double temp = 0D;
-
-            foreach (var ps in ProbabilityStatesInfos)
-            {
-                temp += ps.State[1] * (ps.Times / (double)Tact);
             }
         }
 
