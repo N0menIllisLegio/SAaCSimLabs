@@ -5,8 +5,8 @@ namespace SAaCSimLabs.Lab3.Components
     abstract class Source : IComponent
     {
         protected readonly Random _rnd = new Random();
-        protected readonly double _ρ;
-        protected readonly int? _fixedTime;
+        public readonly double _ρ;
+        public readonly int? _fixedTime;
         protected int tactWorked;
         protected readonly MassServiceSystem _massServiceSystem;
 

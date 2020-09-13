@@ -22,6 +22,8 @@ namespace SAaCSimLabs.Lab3.Components
             }
         }
 
+        public int TactsChannelBlocking { get; set; }
+
         public ChannelWithBlockingDiscipline(int positionInStruct, double π) : base(positionInStruct, π)
         {
             // 0 - no requests, 1 - one request, 2 - blocked
@@ -43,6 +45,11 @@ namespace SAaCSimLabs.Lab3.Components
                     ProcessingRequest.State = RequestState.Processing;
                     nextComponent.ProcessingRequest = ProcessingRequest;
                     ProcessingRequest = null;
+                }
+
+                if (ProcessingRequest != null && ProcessingRequest.State == RequestState.Pending)
+                {
+                    TactsChannelBlocking++;
                 }
             }
         }

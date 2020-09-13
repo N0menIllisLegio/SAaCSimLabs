@@ -8,18 +8,37 @@ namespace SAaCSimLabs.Lab3
     {
         public int[] State { get; set; }
         public int Times { get; set; }
+
+        public override string ToString()
+        {
+            string output = "";
+
+            for (int i = State.Length - 1; i >= 0; i--)
+            {
+                output += $"{State[i]}";
+            }
+
+            output += $" - {Times}";
+            
+            return output;
+        }
     }
 
     class MassServiceSystem
     {
-        public int ExecutionTime { get; set; }
-        public List<Request> Requests { get; }
+        private int _requestsInSystem;
 
-        // Start from 1 not from 0
+        public int ExecutionTime { get; set; }
+
         public int Tact { get; private set; }
+        public List<Request> Requests { get; private set; }
         public IComponent[] Components { get; private set; }
 
+        #region StatisticsProps
+
         public List<StateInfo> ProbabilityStatesInfos { get; private set; }
+
+        #endregion
 
         public MassServiceSystem(int executionTime)
         {
@@ -30,6 +49,7 @@ namespace SAaCSimLabs.Lab3
 
         public void SetComponents(params IComponent[] components)
         {
+            // Add validating of system
             Components = components.OrderByDescending(component => component.PositionInStruct).ToArray();
             LinkComponents(components);
         }
@@ -37,18 +57,160 @@ namespace SAaCSimLabs.Lab3
         public void Execute()
         {
             Requests.Clear();
+            ProbabilityStatesInfos.Clear();
+
+            //UpdateStates(GetCurrentStateOfSystem());
 
             for (Tact = 1; Tact < ExecutionTime; Tact++)
             {
-                var state = GetCurrentStateOfSystem();
-                UpdateStates(state);
-
                 foreach (IComponent component in Components)
                 {
                     component.Process();
                 }
 
-                Requests.ForEach(x => x.TactsPassed());
+                foreach (Request request in Requests)
+                {
+                    request.TactsPassed();
+
+                    if (request.State == RequestState.Pending || request.State == RequestState.Processing)
+                    {
+                        _requestsInSystem++;
+                    }
+                }
+
+                UpdateStates(GetCurrentStateOfSystem());
+            }
+
+            CalculateStatistics();
+        }
+
+        private void CalculateStatistics()
+        {
+            //А – абсолютная пропускная способность(среднее число заявок, 
+            //   обслуживаемых системой в единицу времени, т.е.интенсивность потока заявок на выходе системы);
+            var AbsoluteBandwidth = Requests.Count(x => x.State == RequestState.Completed) / (double)Tact;
+
+            //Ротк – вероятность отказа(вероятность того, что заявка, 
+            //   сгенерированная источником, не будет в конечном итоге обслужена системой);
+            var DeclineProbability = Requests.Count(x => x.State == RequestState.Discarded) / (double)Requests.Count;
+
+            //Wс – среднее время пребывания заявки в системе;
+            var AvgTimeOfRequestInSystem = Requests.Sum(x => x.ExistingTime) / (double)Requests.Count(x => 
+                x.State != RequestState.Discarded);
+
+            //Lc – среднее число заявок, находящихся в системе;
+            var AvgRequestsInSystem = _requestsInSystem / (double)Tact;
+
+            //Q – относительная пропускная способность(вероятность того, что 
+            //   заявка, сгенерированная источником, будет в конечном итоге обслужена системой);
+            var RelativeBandwidth = Requests.Count(x => x.State == RequestState.Completed) / (double) Requests.Count;
+
+            //Wоч – среднее время пребывания заявки в очереди;
+            var AvgTimeOfRequestInQueue = Requests.Sum(x => x.TimeInQueue) / (double)Requests.Count(x => x.TimeInQueue > 0);
+
+
+            List<double[]> tactsChannelProcessing = new List<double[]>();
+            List<double[]> tactsComponentBlocking = new List<double[]>();
+            List<double[]> sizesOfQueues = new List<double[]>();
+
+            foreach (IComponent component in Components)
+            {
+                if (component.GetType() == typeof(Channel))
+                {
+                    double[] channelInfo = new double[3];
+                    Channel channel = component as Channel;
+
+                    channelInfo[0] = component.PositionInStruct;
+                    channelInfo[1] = channel._π;
+                    channelInfo[2] = channel.TactsChannelProcessing;
+
+                    tactsChannelProcessing.Add(channelInfo);
+                }
+
+                if (component.GetType() == typeof(ChannelWithBlockingDiscipline))
+                {
+                    double[] channelInfo = new double[3];
+                    ChannelWithBlockingDiscipline channel = component as ChannelWithBlockingDiscipline;
+                    channelInfo[0] = component.PositionInStruct;
+                    channelInfo[1] = channel._π;
+                    channelInfo[2] = channel.TactsChannelBlocking;
+
+                    tactsComponentBlocking.Add(channelInfo);
+                }
+
+                if (component.GetType() == typeof(SourceWithBlockingDiscipline))
+                {
+                    double[] channelInfo = new double[3];
+                    SourceWithBlockingDiscipline source = component as SourceWithBlockingDiscipline;
+                    channelInfo[0] = component.PositionInStruct;
+                    
+                    if (source._fixedTime != null)
+                    {
+                        channelInfo[1] = source._fixedTime.Value;
+                    }
+                    else
+                    {
+                        channelInfo[1] = source._ρ;
+                    }
+                    
+                    channelInfo[2] = source.TactsChannelBlocking;
+
+                    tactsComponentBlocking.Add(channelInfo);
+                }
+
+                if (component.GetType() == typeof(Queue))
+                {
+                    double[] queueInfo = new double[3];
+                    Queue queue = component as Queue;
+
+                    queueInfo[0] = queue.PositionInStruct;
+                    queueInfo[1] = queue._queueSize;
+                    queueInfo[2] = queue.SumOfSizes;
+
+                    sizesOfQueues.Add(queueInfo);
+                }
+            }
+
+            //Kкан – коэффициент загрузки канала (вероятность занятости канала).
+            // The problem is that I am not 100% sure that its exectly last channel
+            // and there can be more than 1 channel => idk is this 1 combined result or separete for each channel
+
+            // tacts processing / Tact
+            // var CoefOfChannelCapacity = tactsChannelProcessing / (double)Tact;
+            List<double[]> CoefsOfChannelCapacity = new List<double[]>();
+
+            foreach (double[] channelInfo in tactsChannelProcessing)
+            {
+                channelInfo[2] = channelInfo[2] / Tact;
+                CoefsOfChannelCapacity.Add(channelInfo);
+            }
+
+            //Рбл – вероятность блокировки(вероятность застать источник или канал в состоянии блокировки);
+            //
+            List<double[]> BlockingProbability = new List<double[]>();
+
+            foreach (double[] componentlInfo in tactsComponentBlocking)
+            {
+                componentlInfo[2] = componentlInfo[2] / Tact;
+                CoefsOfChannelCapacity.Add(componentlInfo);
+            }
+
+            //Lоч – средняя длина очереди;
+            //Requests.Count(x => x.TimeInQueue > 0) / (double) Requests.Count; // ?
+            List<double[]> AvgQueueLength = new List<double[]>();
+
+            foreach (double[] queueInfo in sizesOfQueues)
+            {
+                queueInfo[2] = queueInfo[2] / Tact;
+                AvgQueueLength.Add(queueInfo);
+            }
+
+            // L by formula:
+            double temp = 0D;
+
+            foreach (var ps in ProbabilityStatesInfos)
+            {
+                temp += ps.State[1] * (ps.Times / (double)Tact);
             }
         }
 
@@ -99,7 +261,7 @@ namespace SAaCSimLabs.Lab3
                 StateInfo stateInfo = new StateInfo
                 {
                     State = newState,
-                    Times = 0
+                    Times = 1
                 };
 
                 ProbabilityStatesInfos.Add(stateInfo);

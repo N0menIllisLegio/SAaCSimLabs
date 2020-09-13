@@ -22,6 +22,8 @@ namespace SAaCSimLabs.Lab3.Components
             }
         }
 
+        public int TactsChannelBlocking { get; set; }
+
         public SourceWithBlockingDiscipline(MassServiceSystem mSS, int positionInStruct, int fixedTime)
             : base(mSS, positionInStruct, fixedTime)
         {
@@ -58,6 +60,11 @@ namespace SAaCSimLabs.Lab3.Components
                     request.State = RequestState.Processing;
                     nextComponent.ProcessingRequest = request;
                     ProcessingRequest = null;
+                }
+
+                if (ProcessingRequest != null && ProcessingRequest.State == RequestState.Pending)
+                {
+                    TactsChannelBlocking++;
                 }
             }
         }

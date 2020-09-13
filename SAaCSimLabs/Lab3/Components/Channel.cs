@@ -5,7 +5,7 @@ namespace SAaCSimLabs.Lab3.Components
     class Channel : IComponent
     {
         protected readonly Random _rnd = new Random();
-        protected double _π;
+        public readonly double _π;
 
         public int MaxProbabilityState { get; set; }
         public virtual int CurrentState => ProcessingRequest != null ? 1 : 0;
@@ -13,6 +13,8 @@ namespace SAaCSimLabs.Lab3.Components
         public IComponent[] NextComponents { get; set; }
         public int PositionInStruct { get; set; }
         public Request ProcessingRequest { get; set; }
+
+        public int TactsChannelProcessing { get; set; }
 
         public Channel(int positionInStruct, double π)
         {
@@ -25,10 +27,15 @@ namespace SAaCSimLabs.Lab3.Components
 
         public virtual void Process()
         {
-            if (ProcessingRequest != null && RequestProcessed())
+            if (ProcessingRequest != null)
             {
-                ProcessingRequest.State = RequestState.Completed;
-                ProcessingRequest = null;
+                if (RequestProcessed())
+                {
+                    ProcessingRequest.State = RequestState.Completed;
+                    ProcessingRequest = null;
+                }
+
+                TactsChannelProcessing++;
             }
         }
 

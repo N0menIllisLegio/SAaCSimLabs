@@ -6,7 +6,7 @@ namespace SAaCSimLabs.Lab3.Components
 {
     class Queue : IComponent
     {
-        private readonly int _queueSize;
+        public readonly int _queueSize;
         private Request _processingRequest;
 
         public int CurrentState
@@ -19,6 +19,7 @@ namespace SAaCSimLabs.Lab3.Components
             }
         }
 
+        public int SumOfSizes { get; private set; }
         public int MaxProbabilityState { get; set; }
         public IComponent[] NextComponents { get; set; }
         public int PositionInStruct { get; set; }
@@ -78,6 +79,19 @@ namespace SAaCSimLabs.Lab3.Components
 
         public void Process()
         {
+            foreach (Request request in RequestsQueue)
+            {
+                request.TimeInQueue++;
+                SumOfSizes++;
+            }
+
+            if (ProcessingRequest != null)
+            {
+                ProcessingRequest.TimeInQueue++;
+                SumOfSizes++;
+            }
+
+
             if (RequestsQueue.Count > 0)
             {
                 IComponent nextComponent =

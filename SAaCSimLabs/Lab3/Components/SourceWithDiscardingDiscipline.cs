@@ -13,8 +13,7 @@ namespace SAaCSimLabs.Lab3.Components
                     return 0;
                 }
 
-                // -1 ?
-                return tactWorked % (_fixedTime.Value - 1);
+                return tactWorked % _fixedTime.Value;
             } 
         }
 
@@ -28,6 +27,7 @@ namespace SAaCSimLabs.Lab3.Components
         public SourceWithDiscardingDiscipline(MassServiceSystem mSS, int positionInStruct, int fixedTime)
             : base(mSS, positionInStruct, fixedTime)
         {
+            // int time = fixedTime
             // 0 - here you cant block request will discard | -1 ? 
             MaxProbabilityState = fixedTime - 1;
         }

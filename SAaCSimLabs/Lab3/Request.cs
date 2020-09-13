@@ -12,6 +12,7 @@
     {
         public RequestState State;
         public int ExistingTime;
+        public int TimeInQueue;
         public int CreationTact;
 
         public void TactsPassed(int ticks = 1)
