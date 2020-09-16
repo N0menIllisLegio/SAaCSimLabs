@@ -72,8 +72,6 @@ namespace SAaCSimLabs.Lab3
             Requests.Clear();
             ProbabilityStatesInfos.Clear();
 
-            //UpdateStates(GetCurrentStateOfSystem());
-
             for (Tact = 1; Tact < ExecutionTime; Tact++)
             {
                 foreach (IComponent component in Components)
@@ -102,24 +100,24 @@ namespace SAaCSimLabs.Lab3
             //А – абсолютная пропускная способность(среднее число заявок, 
             //   обслуживаемых системой в единицу времени, т.е.интенсивность потока заявок на выходе системы);
             AbsoluteBandwidth = Requests.Count(x => x.State == RequestState.Completed) / (double)Tact;
+            
+            //Q – относительная пропускная способность(вероятность того, что 
+            //   заявка, сгенерированная источником, будет в конечном итоге обслужена системой);
+            RelativeBandwidth = Requests.Count(x => x.State == RequestState.Completed) / (double)Requests.Count;
 
             //Ротк – вероятность отказа(вероятность того, что заявка, 
             //   сгенерированная источником, не будет в конечном итоге обслужена системой);
             DeclineProbability = Requests.Count(x => x.State == RequestState.Discarded) / (double)Requests.Count;
+            
+            //Wоч – среднее время пребывания заявки в очереди; ???????
+            AvgTimeOfRequestInQueue = Requests.Sum(x =>x.TimeInQueue) / (double)Requests.Count(x=>x.State == RequestState.Completed);
 
-            //Wс – среднее время пребывания заявки в системе;
-            AvgTimeOfRequestInSystem = Requests.Sum(x => x.ExistingTime) / (double)Requests.Count(x => 
-                x.State != RequestState.Discarded);
+            //Wс – среднее время пребывания заявки в системе; ???????
+            AvgTimeOfRequestInSystem = Requests.Sum(x => x.ExistingTime) / (double)Requests.Count(x=>x.State == RequestState.Completed);
 
             //Lc – среднее число заявок, находящихся в системе;
             AvgRequestsInSystem = _requestsInSystem / (double)Tact;
 
-            //Q – относительная пропускная способность(вероятность того, что 
-            //   заявка, сгенерированная источником, будет в конечном итоге обслужена системой);
-            RelativeBandwidth = Requests.Count(x => x.State == RequestState.Completed) / (double) Requests.Count;
-
-            //Wоч – среднее время пребывания заявки в очереди;
-            AvgTimeOfRequestInQueue = Requests.Sum(x => x.TimeInQueue) / (double)Requests.Count(x => x.State != RequestState.Temp);
 
             List<double[]> tactsChannelProcessing = new List<double[]>();
             List<double[]> tactsComponentBlocking = new List<double[]>();
@@ -172,7 +170,7 @@ namespace SAaCSimLabs.Lab3
                     Queue queue = component as Queue;
 
                     queueInfo[0] = queue.PositionInStruct;
-                    queueInfo[1] = queue._queueSize;
+                    queueInfo[1] = queue._queueSize + 1;
                     queueInfo[2] = queue.SumOfSizes;
 
                     sizesOfQueues.Add(queueInfo);
