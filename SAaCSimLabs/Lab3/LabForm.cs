@@ -1,7 +1,6 @@
-﻿using System;
-using System.Linq;
+﻿using SAaCSimLabs.Lab3.Components;
+using System;
 using System.Windows.Forms;
-using SAaCSimLabs.Lab3.Components;
 
 namespace SAaCSimLabs.Lab3
 {
@@ -17,41 +16,45 @@ namespace SAaCSimLabs.Lab3
             ClearComponents();
 
             var system = new MassServiceSystem(10000);
-            var source = new SourceWithDiscardingDiscipline(system, 0, 0.5);
-            var queue = new Queue(1, 1);
-            var pi1 = new ChannelWithDiscardingDiscipline(2, 0.45);
-            var pi2 = new Channel(3, 0.35);
+
+            var source = new SourceWithDiscardingDiscipline(0, system, 0, 0.5);
+            var queue = new Queue(1, 1, 1);
+            var pi1 = new ChannelWithDiscardingDiscipline(2, 2, 0.45);
+            var pi2 = new Channel(3, 3, 0.35);
 
             system.SetComponents(source, pi1, queue, pi2);
-            system.Execute();
+            system.Start();
 
-            system.ProbabilityStatesInfos.ForEach(stateInfo => AddToOutputBox($"{stateInfo} - {stateInfo.Times / (double)system.Tact:F4}"));
+            system.ProbabilityStatesInfos.ForEach(stateInfo => 
+                ProbabilitiesOutput.Rows.Add(null, stateInfo.ToString(), stateInfo.Times / (double)system.Tact));
 
-            AddToOutputBox($"A = {system.AbsoluteBandwidth:F4}");
-            AddToOutputBox($"Q = {system.RelativeBandwidth:F4}");
-            AddToOutputBox($"Pотк = {system.DeclineProbability:F4}");
-            AddToOutputBox($"Lс = {system.AvgRequestsInSystem:F4}");
 
-            system.CoefsOfChannelCapacity.ForEach(coef => AddToOutputBox($"K of channel(π = {coef[1]}) = {coef[2]:F4}"));
-            system.AvgQueueLength.ForEach(length => AddToOutputBox($"L of queue(places = {length[1]}) = {length[2]:F4}"));
+            AddToOutputBox("A", system.AbsoluteBandwidth);
+            AddToOutputBox("Q", system.RelativeBandwidth);
+            AddToOutputBox("Pотк", system.DeclineProbability);
+            AddToOutputBox("Lс", system.AvgRequestsInSystem);
+            AddToOutputBox("Wоч", system.AvgTimeOfRequestInQueue);
+            AddToOutputBox("Wс", system.AvgTimeOfRequestInSystem);
 
-            AddToOutputBox($"Wоч = {system.AvgTimeOfRequestInQueue:F4}");
-            AddToOutputBox($"Wс = {system.AvgTimeOfRequestInSystem:F4}");
+            system.CoefsOfChannelCapacity.ForEach(coef => AddToOutputBox($"Kк({coef.Key}) = {coef.Value:F3}"));
+            system.AvgQueueLength.ForEach(length => AddToOutputBox($"Lоч({length.Key}) = {length.Value:F3}"));
+
+        }
+
+        private void AddToOutputBox(string name, double value)
+        {
+            OutputBox.Text += string.Format("{0,-6}={1,6:F3}", name, value) + Environment.NewLine;
         }
 
         private void AddToOutputBox(string message)
         {
-            ExecuteInUIThread(() => OutputBox.Text += message + Environment.NewLine);
-        }
-
-        private void ExecuteInUIThread(Action action)
-        {
-            this.Invoke(action);
+            OutputBox.Text += message + Environment.NewLine;
         }
 
         private void ClearComponents()
         {
             OutputBox.Text = "";
+            ProbabilitiesOutput.Rows.Clear();
         }
     }
 }

@@ -4,6 +4,11 @@ namespace SAaCSimLabs.Lab3.Components
 {
     class SourceWithDiscardingDiscipline : Source
     {
+        /// <summary>
+        /// State of source
+        /// 0 if not fixed time (always generating);
+        /// Tacts before request generates if fixed time
+        /// </summary>
         public override int CurrentState 
         { 
             get
@@ -17,21 +22,35 @@ namespace SAaCSimLabs.Lab3.Components
             } 
         }
 
-        public SourceWithDiscardingDiscipline(MassServiceSystem mSS, int positionInStruct, double ρ)
-            : base(mSS, positionInStruct, ρ)
+        /// <summary>
+        /// Create filtering source with discarding discipline
+        /// </summary>
+        /// <param name="id">Unique identifier of source</param>
+        /// <param name="mSS">System in which this source works</param>
+        /// <param name="positionInStruct">Position in system</param>
+        /// <param name="ρ">Probability of not generating a request</param>
+        public SourceWithDiscardingDiscipline(int id, MassServiceSystem mSS, int positionInStruct, double ρ)
+            : base(id, mSS, positionInStruct, ρ)
         {
-            // Its just generating
             MaxProbabilityState = 0;
         }
 
-        public SourceWithDiscardingDiscipline(MassServiceSystem mSS, int positionInStruct, int fixedTime)
-            : base(mSS, positionInStruct, fixedTime)
+        /// <summary>
+        /// Create fixed time source with discarding discipline
+        /// </summary>
+        /// <param name="id">Unique identifier of source</param>
+        /// <param name="mSS">System in which this source works</param>
+        /// <param name="positionInStruct">Position in system</param>
+        /// <param name="fixedTime">Tacts before request generates</param>
+        public SourceWithDiscardingDiscipline(int id, MassServiceSystem mSS, int positionInStruct, int fixedTime)
+            : base(id, mSS, positionInStruct, fixedTime)
         {
-            // int time = fixedTime
-            // 0 - here you cant block request will discard | -1 ? 
             MaxProbabilityState = fixedTime - 1;
         }
 
+        /// <summary>
+        /// Generates requests
+        /// </summary>
         public override void Process()
         {
             if (RequestCreated())

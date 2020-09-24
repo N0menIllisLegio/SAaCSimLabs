@@ -4,11 +4,32 @@ namespace SAaCSimLabs.Lab3.Components
 {
     abstract class Source : IComponent
     {
-        protected readonly Random _rnd = new Random();
-        public readonly double _ρ;
-        public readonly int? _fixedTime;
+        /// <summary>
+        /// Unique identifier of source
+        /// </summary>
+        private readonly int _id;
+
+        /// <summary>
+        /// Probability of not generating a request
+        /// </summary>
+        private readonly double _ρ;
+
+        /// <summary>
+        /// Tacts to generate request
+        /// </summary>
+        protected readonly int? _fixedTime;
+
+        /// <summary>
+        /// Tacts component was at work to generate request
+        /// (counter for _fixedTime)
+        /// </summary>
         protected int tactWorked;
+
+        /// <summary>
+        /// System in which this component works
+        /// </summary>
         protected readonly MassServiceSystem _massServiceSystem;
+        protected readonly Random _rnd = new Random();
 
         public virtual int CurrentState { get; }
         public int MaxProbabilityState { get; set; }
@@ -16,21 +37,26 @@ namespace SAaCSimLabs.Lab3.Components
         public int PositionInStruct { get; set; }
         public Request ProcessingRequest { get; set; }
 
-
-        protected Source(MassServiceSystem mSS, int positionInStruct, double ρ)
+        protected Source(int id, MassServiceSystem mSS, int positionInStruct, double ρ)
         {
+            _id = id;
             _ρ = ρ;
             PositionInStruct = positionInStruct;
             _massServiceSystem = mSS;
         }
 
-        protected Source(MassServiceSystem mSS, int positionInStruct, int fixedTime)
+        protected Source(int id, MassServiceSystem mSS, int positionInStruct, int fixedTime)
         {
+            _id = id;
             _fixedTime = fixedTime;
             PositionInStruct = positionInStruct;
             _massServiceSystem = mSS;
         }
-            
+
+        /// <summary>
+        /// Tries to create request
+        /// </summary>
+        /// <returns>True - request created, otherwise - false</returns>
         protected bool RequestCreated()
         {
             if (_fixedTime != null)
@@ -42,6 +68,25 @@ namespace SAaCSimLabs.Lab3.Components
             return _rnd.NextDouble() > _ρ;
         }
 
+        /// <summary>
+        /// Generates requests
+        /// </summary>
         public abstract void Process();
+
+        public override string ToString()
+        {
+            string output;
+
+            if (_fixedTime != null)
+            {
+                output = $"Id: {_id}, Fixed time: {_fixedTime.Value}";
+            }
+            else
+            {
+                output = $"Id: {_id}, ρ: {_ρ}";
+            }
+
+            return output;
+        }
     }
 }

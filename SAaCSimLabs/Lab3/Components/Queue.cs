@@ -6,9 +6,25 @@ namespace SAaCSimLabs.Lab3.Components
 {
     class Queue : IComponent
     {
-        public readonly int _queueSize;
+        /// <summary>
+        /// Unique identifier of queue
+        /// </summary>
+        private readonly int _id;
+
+        /// <summary>
+        /// Queue size-1, since one last element 
+        /// stored in ProcessingRequest
+        /// </summary>
+        private readonly int _queueSize;
+
+        /// <summary>
+        /// Last component in queue
+        /// </summary>
         private Request _processingRequest;
 
+        /// <summary>
+        /// Queue state = requests in queue
+        /// </summary>
         public int CurrentState
         {
             get
@@ -23,22 +39,29 @@ namespace SAaCSimLabs.Lab3.Components
         public int MaxProbabilityState { get; set; }
         public IComponent[] NextComponents { get; set; }
         public int PositionInStruct { get; set; }
-        public System.Collections.Generic.Queue<Request> RequestsQueue { get; set; }
 
+        /// <summary>
+        /// Last component of queue
+        /// </summary>
         public Request ProcessingRequest
         {
             get => _processingRequest;
             set
             {
+                // Request enters queue
+
                 bool requestPassedToNextProcess = false;
 
                 if (RequestsQueue.Count == 0)
                 {
+                    // Queue is empty
                     IComponent nextComponent =
                         NextComponents.FirstOrDefault(component => component.ProcessingRequest == null);
 
                     if (nextComponent != null)
                     {
+                        // There are empty channels connected
+                        // pass request to them
                         requestPassedToNextProcess = true;
                         nextComponent.ProcessingRequest = value;
                         _processingRequest = null;
@@ -47,19 +70,27 @@ namespace SAaCSimLabs.Lab3.Components
 
                 if (!requestPassedToNextProcess)
                 {
+                    // Queue is empty but all connected channels are busy
+
                     if (RequestsQueue.Count == _queueSize)
                     {
+                        // There are no space in buffer
+                        // store request in this props back field
                         _processingRequest = value;
                     }
                     else
                     {
+                        // There are space in queue
+
                         if (RequestsQueue.Count < _queueSize)
                         {
+                            // Add request in buffer
                             RequestsQueue.Enqueue(value);
                             _processingRequest = null;
                         }
                         else
                         {
+                            // This should never happen
                             throw new ConstraintException($"Somehow queue is overflowed (Max = {_queueSize}, Current = {RequestsQueue.Count})");
                         }
                     }
@@ -67,16 +98,31 @@ namespace SAaCSimLabs.Lab3.Components
             } 
         }
 
-        public Queue(int positionInStruct, int queueSize)
+        /// <summary>
+        /// Queue buffer
+        /// </summary>
+        public Queue<Request> RequestsQueue { get; set; }
+
+        /// <summary>
+        /// Create queue
+        /// </summary>
+        /// <param name="id">Unique identifier of queue</param>
+        /// <param name="positionInStruct">Position in system</param>
+        /// <param name="queueSize">Size of queue</param>
+        public Queue(int id, int positionInStruct, int queueSize)
         {
+            _id = id;
             PositionInStruct = positionInStruct;
             RequestsQueue = new Queue<Request>();
-            // One last element stored in ProcessingRequest
             _queueSize = queueSize - 1;
             
             MaxProbabilityState = queueSize;
         }
 
+        /// <summary>
+        /// Try to push requests in connected channels
+        /// if there any
+        /// </summary>
         public void Process()
         {
             foreach (Request request in RequestsQueue)
@@ -123,6 +169,11 @@ namespace SAaCSimLabs.Lab3.Components
                     }
                 }
             }
+        }
+
+        public override string ToString()
+        {
+            return $"Id: {_id}, Queue size: {_queueSize + 1}";
         }
     }
 }

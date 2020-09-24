@@ -4,6 +4,12 @@ namespace SAaCSimLabs.Lab3.Components
 {
     class ChannelWithBlockingDiscipline : Channel
     {
+        /// <summary>
+        /// State of channel
+        /// 2 - Channel is blocked;
+        /// 1 - Processing request;
+        /// 0 - Free channel
+        /// </summary>
         public override int CurrentState 
         {
             get
@@ -22,14 +28,26 @@ namespace SAaCSimLabs.Lab3.Components
             }
         }
 
-        public int TactsChannelBlocking { get; set; }
+        /// <summary>
+        /// How many tacts this channel was blocked
+        /// </summary>
+        public int TactsChannelBlocked { get; set; }
 
-        public ChannelWithBlockingDiscipline(int positionInStruct, double π) : base(positionInStruct, π)
+        /// <summary>
+        /// Create channel with blocking discipline
+        /// </summary>
+        /// <param name="id">Unique identifier of channel</param>
+        /// <param name="positionInStruct">Position in system</param>
+        /// <param name="π">Probability of not processing a request</param>
+        public ChannelWithBlockingDiscipline(int id, int positionInStruct, double π) 
+            : base(id, positionInStruct, π)
         {
-            // 0 - no requests, 1 - one request, 2 - blocked
             MaxProbabilityState = 2;
         }
 
+        /// <summary>
+        /// Process request
+        /// </summary>
         public override void Process()
         {
             if (ProcessingRequest != null && (ProcessingRequest.State == RequestState.Pending || RequestProcessed()))
@@ -49,7 +67,7 @@ namespace SAaCSimLabs.Lab3.Components
 
                 if (ProcessingRequest != null && ProcessingRequest.State == RequestState.Pending)
                 {
-                    TactsChannelBlocking++;
+                    TactsChannelBlocked++;
                 }
             }
         }

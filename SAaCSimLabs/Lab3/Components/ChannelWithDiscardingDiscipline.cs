@@ -4,12 +4,18 @@ namespace SAaCSimLabs.Lab3.Components
 {
     class ChannelWithDiscardingDiscipline : Channel
     {
-        public ChannelWithDiscardingDiscipline(int positionInStruct, double π) : base(positionInStruct, π)
-        {
-            // 0 - no requests, 1 - processing
-            MaxProbabilityState = 1;
-        }
+        /// <summary>
+        /// Create channel with discarding discipline
+        /// </summary>
+        /// <param name="id">Unique identifier of channel</param>
+        /// <param name="positionInStruct">Position in system</param>
+        /// <param name="π">Probability of not processing a request</param>
+        public ChannelWithDiscardingDiscipline(int id, int positionInStruct, double π) 
+            : base(id, positionInStruct, π) { }
 
+        /// <summary>
+        /// Process request
+        /// </summary>
         public override void Process()
         {
             if (ProcessingRequest != null && RequestProcessed())

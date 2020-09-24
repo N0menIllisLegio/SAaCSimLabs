@@ -4,6 +4,13 @@ namespace SAaCSimLabs.Lab3.Components
 {
     class SourceWithBlockingDiscipline : Source
     {
+
+        /// <summary>
+        /// State of source
+        /// 0 - Blocked;
+        /// 1 - generating if not fixed time;
+        /// Tacts before request generates if fixed time
+        /// </summary>
         public override int CurrentState 
         {
             get
@@ -22,22 +29,40 @@ namespace SAaCSimLabs.Lab3.Components
             }
         }
 
-        public int TactsChannelBlocking { get; set; }
+        /// <summary>
+        /// How many tacts this source was blocked
+        /// </summary>
+        public int TactsSourceBlocked { get; set; }
 
-        public SourceWithBlockingDiscipline(MassServiceSystem mSS, int positionInStruct, int fixedTime)
-            : base(mSS, positionInStruct, fixedTime)
+        /// <summary>
+        /// Create fixed time source with blocking discipline
+        /// </summary>
+        /// <param name="id">Unique identifier of source</param>
+        /// <param name="mSS">System in which this source works</param>
+        /// <param name="positionInStruct">Position in system</param>
+        /// <param name="fixedTime">Tacts before request generates</param>
+        public SourceWithBlockingDiscipline(int id, MassServiceSystem mSS, int positionInStruct, int fixedTime)
+            : base(id, mSS, positionInStruct, fixedTime)
         {
-            // 0 - Blocked, 1...fixedTime - Time for request to appear
             MaxProbabilityState = fixedTime;
         }
 
-        public SourceWithBlockingDiscipline(MassServiceSystem mSS, int positionInStruct, double ρ)
-            : base(mSS, positionInStruct, ρ)
+        /// <summary>
+        /// Create filtering source with blocking discipline
+        /// </summary>
+        /// <param name="id">Unique identifier of source</param>
+        /// <param name="mSS">System in which this source works</param>
+        /// <param name="positionInStruct">Position in system</param>
+        /// <param name="ρ">Probability of not generating a request</param>
+        public SourceWithBlockingDiscipline(int id, MassServiceSystem mSS, int positionInStruct, double ρ)
+            : base(id, mSS, positionInStruct, ρ)
         {
-            // 0 - blocked, 1 - generating
             MaxProbabilityState = 1;
         }
 
+        /// <summary>
+        /// Generates requests
+        /// </summary>
         public override void Process()
         {
             if (ProcessingRequest != null || RequestCreated())
@@ -64,7 +89,7 @@ namespace SAaCSimLabs.Lab3.Components
 
                 if (ProcessingRequest != null && ProcessingRequest.State == RequestState.Pending)
                 {
-                    TactsChannelBlocking++;
+                    TactsSourceBlocked++;
                 }
             }
         }
