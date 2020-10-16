@@ -30,7 +30,8 @@ namespace SAaCSimLabs
 
         private void Lab4Button_Click(object sender, EventArgs e)
         {
-
+            Lab4.LabForm lab4Form = new Lab4.LabForm();
+            lab4Form.ShowDialog(this);
         }
     }
 }

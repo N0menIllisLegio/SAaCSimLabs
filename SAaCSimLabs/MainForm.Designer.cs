@@ -66,7 +66,6 @@
             // 
             // Lab4Button
             // 
-            this.Lab4Button.Enabled = false;
             this.Lab4Button.Location = new System.Drawing.Point(12, 151);
             this.Lab4Button.Name = "Lab4Button";
             this.Lab4Button.Size = new System.Drawing.Size(170, 40);
