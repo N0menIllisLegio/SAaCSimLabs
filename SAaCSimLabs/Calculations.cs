@@ -114,6 +114,7 @@ namespace SAaCSimLabs
             //    }
             //}
 
+            // ! NOT 100% SURE !
             AperiodicitySegment = _sequence.Length % Period + Period;
         }
 

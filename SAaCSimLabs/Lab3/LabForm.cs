@@ -1,5 +1,6 @@
 ﻿using SAaCSimLabs.Lab3.Components;
 using System;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SAaCSimLabs.Lab3
@@ -11,23 +12,27 @@ namespace SAaCSimLabs.Lab3
             InitializeComponent();
         }
 
-        private void SimulateButton_Click(object sender, EventArgs e)
+        private async void SimulateButton_Click(object sender, EventArgs e)
         {
             ClearComponents();
 
             var system = new MassServiceSystem(10000);
 
-            var source = new SourceWithDiscardingDiscipline(0, system, 0, 0.5);
-            var queue = new Queue(1, 1, 1);
-            var pi1 = new ChannelWithDiscardingDiscipline(2, 2, 0.45);
-            var pi2 = new Channel(3, 3, 0.35);
+            //var source = new SourceWithDiscardingDiscipline(0, system, 0, 0.5);
+            //var queue = new Queue(1, 1, 1);
+            //var pi1 = new ChannelWithDiscardingDiscipline(2, 2, 0.45);
+            //var pi2 = new Channel(3, 3, 0.35);
+
+            var source = new SourceWithBlockingDiscipline(0, system, 0, 0.5);
+            var queue = new Queue(1, 1, 2);
+            var pi1 = new ChannelWithDiscardingDiscipline(2, 2, 0.48);
+            var pi2 = new Channel(3, 3, 0.5);
 
             system.SetComponents(source, pi1, queue, pi2);
-            system.Start();
+            await Task.Factory.StartNew(() => system.Start());
 
             system.ProbabilityStatesInfos.ForEach(stateInfo => 
                 ProbabilitiesOutput.Rows.Add(null, stateInfo.ToString(), stateInfo.Times / (double)system.Tact));
-
 
             AddToOutputBox("A", system.AbsoluteBandwidth);
             AddToOutputBox("Q", system.RelativeBandwidth);
@@ -38,7 +43,7 @@ namespace SAaCSimLabs.Lab3
 
             system.CoefsOfChannelCapacity.ForEach(coef => AddToOutputBox($"Kк({coef.Key}) = {coef.Value:F3}"));
             system.AvgQueueLength.ForEach(length => AddToOutputBox($"Lоч({length.Key}) = {length.Value:F3}"));
-
+            system.BlockingProbability.ForEach(block => AddToOutputBox($"Pбл({block.Key}) = {block.Value:F3}"));
         }
 
         private void AddToOutputBox(string name, double value)

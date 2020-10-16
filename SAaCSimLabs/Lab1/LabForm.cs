@@ -23,12 +23,12 @@ namespace SAaCSimLabs.Lab1
             bool showAllNumbers = !DisplayedNumbersLimiter.Checked;
 
             MLCG generator = new MLCG(seed, multiplier, range);
+
             // Set max progressbar
             GeneratingProgress.Maximum = count;
             ClearComponents();
 
             // Generating numbers
-
             await Task.Factory.StartNew(() =>
             {
                 ProgressStage("Generating numbers...");
@@ -46,31 +46,30 @@ namespace SAaCSimLabs.Lab1
 
                     ExecuteInUIThread(() => GeneratingProgress.Value++);
                 }
-            }).ContinueWith(task =>
-            {
-                ProgressStage("Calculating statistics...");
-                Calculations calculations = new Calculations(generator);
-                AddToOutputBox($"M = {calculations.ExpectedValue:F5}");
-                AddToOutputBox($"D = {calculations.Variance:F5}");
-                AddToOutputBox($"σ = {calculations.StandardDeviation:F5}");
-
-                ProgressStage("Building plot...");
-                calculations.BuildHistogram(Plot.plt);
-                Plot.Render();
-
-                ProgressStage("Calculating distribution evenness...");
-                calculations.EstimateDistributionEvenness();
-                AddToOutputBox($"2K/N = {calculations.EstimateDistributionEvenness():F5} -> {Math.PI / 4:F5}");
-
-                ProgressStage("Calculating period...");
-                int period = calculations.Period;
-                int aperiodicitySegment = calculations.AperiodicitySegment;
-
-                AddToOutputBox(period != 0 ? $"P = {period}" : "Not enough numbers to calculate period.");
-                AddToOutputBox(aperiodicitySegment != 0 ? $"L = {aperiodicitySegment}" : "Not enough numbers to calculate aperiodicity segment.");
-
-                ProgressStage("Complete.");
             });
+
+            ProgressStage("Calculating statistics...");
+            Calculations calculations = new Calculations(generator);
+            AddToOutputBox($"M = {calculations.ExpectedValue:F5}");
+            AddToOutputBox($"D = {calculations.Variance:F5}");
+            AddToOutputBox($"σ = {calculations.StandardDeviation:F5}");
+
+            ProgressStage("Building plot...");
+            calculations.BuildHistogram(Plot.plt);
+            Plot.Render();
+
+            ProgressStage("Calculating distribution evenness...");
+            calculations.EstimateDistributionEvenness();
+            AddToOutputBox($"2K/N = {calculations.EstimateDistributionEvenness():F5} -> {Math.PI / 4:F5}");
+
+            ProgressStage("Calculating period...");
+            int period = calculations.Period;
+            int aperiodicitySegment = calculations.AperiodicitySegment;
+
+            AddToOutputBox(period != 0 ? $"P = {period}" : "Not enough numbers to calculate period.");
+            AddToOutputBox(aperiodicitySegment != 0 ? $"L = {aperiodicitySegment}" : "Not enough numbers to calculate aperiodicity segment.");
+
+            ProgressStage("Complete.");
         }
 
         private void AddToOutputBox(string message)
