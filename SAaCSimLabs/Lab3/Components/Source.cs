@@ -20,10 +20,9 @@ namespace SAaCSimLabs.Lab3.Components
         protected readonly int? _fixedTime;
 
         /// <summary>
-        /// Tacts component was at work to generate request
-        /// (counter for _fixedTime)
+        /// Tacts before component generate request
         /// </summary>
-        protected int tactWorked;
+        protected int tactsBeforeRequest;
 
         /// <summary>
         /// System in which this component works
@@ -51,6 +50,7 @@ namespace SAaCSimLabs.Lab3.Components
             _fixedTime = fixedTime;
             PositionInStruct = positionInStruct;
             _massServiceSystem = mSS;
+            tactsBeforeRequest = fixedTime;
         }
 
         /// <summary>
@@ -61,8 +61,13 @@ namespace SAaCSimLabs.Lab3.Components
         {
             if (_fixedTime != null)
             {
-                tactWorked++;
-                return tactWorked % _fixedTime.Value == 0;
+                if (--tactsBeforeRequest == 0)
+                {
+                    tactsBeforeRequest = _fixedTime.Value;
+                    return true;
+                }
+
+                return false;
             }
 
             return _rnd.NextDouble() > _ρ;

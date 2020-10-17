@@ -146,6 +146,8 @@ namespace SAaCSimLabs.Lab3
             Requests.Clear();
             ProbabilityStatesInfos.Clear();
 
+            UpdateStates(GetCurrentStateOfSystem());
+
             for (Tact = 1; Tact < ExecutionTime; Tact++)
             {
                 foreach (IComponent component in Components)

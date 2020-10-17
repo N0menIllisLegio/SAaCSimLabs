@@ -23,12 +23,12 @@ namespace SAaCSimLabs.Lab3
             //var pi1 = new ChannelWithDiscardingDiscipline(2, 2, 0.45);
             //var pi2 = new Channel(3, 3, 0.35);
 
-            var source = new SourceWithBlockingDiscipline(0, system, 0, 0.5);
-            var queue = new Queue(1, 1, 2);
-            var pi1 = new ChannelWithDiscardingDiscipline(2, 2, 0.48);
-            var pi2 = new Channel(3, 3, 0.5);
+            var source = new SourceWithBlockingDiscipline(0, system, 0, 2);
+            var pi1 = new ChannelWithDiscardingDiscipline(1, 1, 0.5);
+            var pi2 = new Channel(2, 2, 0.5);
+            var pi3 = new Channel(3, 2, 0.4);
 
-            system.SetComponents(source, pi1, queue, pi2);
+            system.SetComponents(source, pi1, pi2, pi3);
             await Task.Factory.StartNew(() => system.Start());
 
             system.ProbabilityStatesInfos.ForEach(stateInfo => 

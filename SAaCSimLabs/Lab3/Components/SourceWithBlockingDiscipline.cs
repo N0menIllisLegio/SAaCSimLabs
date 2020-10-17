@@ -22,7 +22,7 @@ namespace SAaCSimLabs.Lab3.Components
 
                 if (_fixedTime != null)
                 {
-                    return tactWorked % _fixedTime.Value;
+                    return tactsBeforeRequest;
                 }
 
                 return 1;

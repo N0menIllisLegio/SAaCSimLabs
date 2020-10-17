@@ -18,7 +18,7 @@ namespace SAaCSimLabs.Lab3.Components
                     return 0;
                 }
 
-                return tactWorked % _fixedTime.Value;
+                return tactsBeforeRequest;
             } 
         }
 
